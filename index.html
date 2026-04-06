@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,7 +7,20 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#0a0a0f">
-    <title>🔥 STAR GAMER - Free Fire Friend Manager</title>
+    <title>🔥 DANGER - Free Fire Friend Manager</title>
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="DANGER FF Friend Manager">
+    <meta property="og:description" content="Advanced Free Fire Friend Management System by @danger_ff_like. Manage friends, accept/reject requests, view friend list with avatars. Auto-detect region, multiple authentication methods.">
+    <meta property="og:image" content="https://danger-friend-management.vercel.app/static/tg-logo.png">
+    <meta property="og:url" content="https://danger-friend-management.vercel.app/">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="DANGER FF Manager">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="DANGER FF Friend Manager">
+    <meta name="twitter:description" content="Advanced Free Fire Friend Management System by @danger_ff_like">
+    <meta name="twitter:image" content="https://danger-friend-management.vercel.app/static/tg-logo.png">
+    <link rel="icon" type="image/x-icon" href="https://danger-friend-management.vercel.app/static/favicon.ico">
+    <link rel="apple-touch-icon" href="https://danger-friend-management.vercel.app/static/favicon.ico">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -991,6 +1003,72 @@
             flex: 1;
         }
 
+        /* Pending Requests Card */
+        .pending-request-card {
+            background: linear-gradient(135deg, rgba(255, 170, 0, 0.15), rgba(20, 20, 35, 0.95));
+            border-radius: 15px;
+            padding: 15px;
+            border: 2px solid rgba(255, 170, 0, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pending-request-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), #ff8800, var(--accent));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .pending-request-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(255, 170, 0, 0.3), 0 0 15px rgba(255, 170, 0, 0.4);
+        }
+
+        .pending-request-card:hover::before {
+            opacity: 1;
+        }
+
+        .pending-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .pending-action-btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            flex: 1;
+        }
+
+        .pending-action-btn.accept {
+            background: linear-gradient(135deg, var(--success), #00cc66);
+            color: white;
+        }
+
+        .pending-action-btn.reject {
+            background: linear-gradient(135deg, var(--error), #cc0000);
+            color: white;
+        }
+
         /* No Friends Message */
         .no-friends {
             text-align: center;
@@ -1005,6 +1083,16 @@
         }
 
         /* ====== INSTRUCTIONS ====== */
+        .badge {
+            background: rgba(255,68,68,0.2);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--primary);
+            border: 1px solid rgba(255,68,68,0.3);
+        }
+
         .instructions-container {
             background: var(--card-bg);
             border-radius: 20px;
@@ -1159,6 +1247,21 @@
         .footer-link:hover {
             color: var(--primary);
         }
+        .logout-btn {
+            background: rgba(255,68,68,0.2);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            margin-left: 10px;
+            transition: all 0.3s;
+        }
+        .logout-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
 
         /* ====== OPERATION STATUS ====== */
         .operation-status {
@@ -1261,6 +1364,31 @@
         .mb-3 { margin-bottom: 15px; }
         .mb-4 { margin-bottom: 20px; }
         .mb-5 { margin-bottom: 25px; }
+
+        /* UID Check Result */
+        .uid-check-result {
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 10px;
+            background: rgba(0,0,0,0.3);
+            border-left: 4px solid var(--info);
+            display: none;
+        }
+        .uid-check-result .info-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .uid-check-result .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .status-active { background: rgba(0,255,136,0.2); color: #00ff88; }
+        .status-ghost { background: rgba(255,170,0,0.2); color: #ffaa00; }
+        .status-not_found { background: rgba(255,68,68,0.2); color: #ff4444; }
     </style>
 </head>
 <body>
@@ -1274,7 +1402,7 @@
         <div class="loading-logo">
             <i class="fas fa-users"></i>
         </div>
-        <div class="loading-text">Star gamer - FRIEND MANAGER</div>
+        <div class="loading-text">DANGER - FRIEND MANAGER</div>
         <div class="loading-subtext">Loading advanced friend management system...</div>
     </div>
 
@@ -1290,13 +1418,16 @@
                     <i class="fas fa-users"></i>
                 </div>
                 <div class="logo-text">
-                    <div class="main-title">STAR GAMER  FRIEND MANAGER</div>
-                    <div class="subtitle">Advanced Free Fire Friend Management System</div>
+                    <div class="main-title">DANGER FRIEND MANAGER</div>
+                    <div class="subtitle">Advanced Free Fire Friend Management System v5.1</div>
                 </div>
             </div>
-            <a href="https://t.me/STAR_METHODE" target="_blank" class="developer-tag">
-                <i class="fab fa-telegram"></i> DEVELOPER: @STAR_RDP
+            <a href="https://t.me/danger_ff_like" target="_blank" class="developer-tag">
+                <i class="fab fa-telegram"></i> DEVELOPER: @danger_ff_like
             </a>
+            <button class="logout-btn" onclick="logout()" title="Logout and clear session">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
         </div>
 
         <!-- Authentication Section -->
@@ -1332,6 +1463,18 @@
                 </div>
             </div>
             
+            <!-- Separate UID/Password fields (hidden by default) -->
+            <div id="uidPasswordFields" style="display: none; margin-top: 15px;">
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-id-card"></i> UID</label>
+                    <input type="text" class="form-input" id="uidInput" placeholder="Enter your UID">
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-lock"></i> Password</label>
+                    <input type="password" class="form-input" id="passwordInput" placeholder="Enter your password">
+                </div>
+            </div>
+            
             <div class="token-actions">
                 <button type="button" class="btn btn-primary" id="loginBtn">
                     <i class="fas fa-sign-in-alt"></i> AUTHENTICATE
@@ -1360,6 +1503,10 @@
                     <i class="fas fa-list"></i>
                     <span>Friend List</span>
                 </button>
+                <button type="button" class="tab-btn" data-tab="pending">
+                    <i class="fas fa-clock"></i>
+                    <span>Pending Requests</span>
+                </button>
                 <button type="button" class="tab-btn" data-tab="instructions">
                     <i class="fas fa-book"></i>
                     <span>Instructions</span>
@@ -1370,12 +1517,17 @@
         <!-- Tab Contents -->
         <div class="tab-content active" id="manageTab">
             <div class="form-row">
-                <div class="form-group">
+                <div class="form-group" style="flex: 2;">
                     <label class="form-label">
                         <i class="fas fa-gamepad"></i> Friend UID
                     </label>
-                    <input type="text" class="form-input" id="friendUid" 
-                           placeholder="Enter target UID">
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" class="form-input" id="friendUid" 
+                               placeholder="Enter target UID" style="flex: 1;">
+                        <button type="button" class="btn btn-info" id="checkUidBtn" style="width: auto; padding: 0 15px;">
+                            <i class="fas fa-search"></i> Check
+                        </button>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label class="form-label">
@@ -1384,8 +1536,22 @@
                     <select class="form-select" id="actionType">
                         <option value="add">Send Friend Request</option>
                         <option value="remove">Remove Friend</option>
+                        <option value="accept">Accept Friend Request</option>
+                        <option value="reject">Reject Friend Request</option>
                     </select>
                 </div>
+            </div>
+
+            <!-- UID Check Result -->
+            <div class="uid-check-result" id="uidCheckResult">
+                <div class="info-row">
+                    <i class="fas fa-user" id="checkIcon" style="font-size: 1.2rem; color: var(--info);"></i>
+                    <div>
+                        <span id="checkNickname"></span> • <span id="checkRegion"></span>
+                        <span id="checkStatusBadge" class="status-badge"></span>
+                    </div>
+                </div>
+                <div id="checkMessage" style="margin-top: 8px; font-size: 0.9rem;"></div>
             </div>
             
             <button type="button" class="btn btn-primary" id="processBtn">
@@ -1442,86 +1608,131 @@
             </div>
         </div>
 
+        <div class="tab-content" id="pendingTab">
+            <button type="button" class="btn btn-warning" id="loadPendingBtn">
+                <i class="fas fa-sync"></i> LOAD PENDING REQUESTS
+            </button>
+            
+            <div class="loading" id="pendingLoading">
+                <div class="spinner"></div>
+                <div>Loading pending friend requests...</div>
+            </div>
+            
+            <div class="message" id="pendingMessage"></div>
+            
+            <div class="results-section" id="pendingResults">
+                <div class="account-info" id="pendingAccountInfo"></div>
+                
+                <div class="friends-list-container">
+                    <div class="friends-list-header">
+                        <div class="section-title">
+                            <i class="fas fa-clock"></i> PENDING FRIEND REQUESTS
+                        </div>
+                        <div class="friends-count" id="pendingCount">
+                            <i class="fas fa-user-clock"></i> <span id="pendingCountValue">0</span> pending
+                        </div>
+                    </div>
+                    
+                    <div class="friends-list" id="pendingList"></div>
+                    
+                    <div class="no-friends" id="noPending" style="display: none;">
+                        <div class="no-friends-icon">
+                            <i class="fas fa-inbox"></i>
+                        </div>
+                        <h3>No Pending Requests</h3>
+                        <p>You don't have any pending friend requests</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="tab-content" id="instructionsTab">
-            <div class="instructions-container">
-                <div class="instruction-step">
-                    <div class="step-number">1</div>
-                    <div class="step-content">
-                        <h3>Get Your EAT Token</h3>
-                        <p>Watch this video tutorial to learn how to get your EAT token :</p>
-                        <a href="https://youtu.be/0blgyEgXE48" target="_blank" class="step-link">
-                            <i class="fab fa-youtube"></i> Watch Tutorial Video
-                        </a>
-                    </div>
-                </div>
-                
-                <div class="instruction-step">
-                    <div class="step-number">2</div>
-                    <div class="step-content">
-                        <h3>Use Telegram Bot for Conversion</h3>
-                        <p>Convert your EAT token to JWT token easily using our official Telegram bot:</p>
-                        <a href="https://t.me/danger_helper_robot" target="_blank" class="step-link">
-                            <i class="fab fa-telegram"></i> Open @danger_helper_robot
-                        </a>
-                        <p>The bot also supports UID:Password and Access Token conversion</p>
-                    </div>
-                </div>
-                
-                <div class="instruction-step">
-                    <div class="step-number">3</div>
-                    <div class="step-content">
-                        <h3>Use the Friend Manager</h3>
-                        <p>Paste your JWT token (from step 2) in the authentication section above.</p>
-                        <p>You can then:</p>
-                        <ul style="color: var(--text-muted); padding-left: 20px; margin-top: 8px; font-size: 0.9rem;">
-                            <li>Send friend requests to any UID</li>
-                            <li>Remove friends from your list</li>
-                            <li>View all your current friends</li>
-                            <li>Remove friends directly from the list</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <div class="links-grid">
-                    <a href="https://t.me/STAR_METHODE" target="_blank" class="link-card">
-                        <div class="link-icon">
-                            <i class="fab fa-telegram"></i>
-                        </div>
-                        <div class="link-title">Main Channel</div>
-                        <div class="link-description">@STAR_METHODE - Free Fire updates and tips</div>
-                    </a>
-                    
-                    <a href="https://t.me/STAR_METHODE" target="_blank" class="link-card">
-                        <div class="link-icon">
-                            <i class="fas fa-code"></i>
-                        </div>
-                        <div class="link-title">APIs Channel</div>
-                        <div class="link-description">@STAR_METHODE - API documentation</div>
-                    </a>
-                    
-                    <a href="https://youtube.com/@STAR_METHODE" target="_blank" class="link-card">
-                        <div class="link-icon">
-                            <i class="fab fa-youtube"></i>
-                        </div>
-                        <div class="link-title">YouTube</div>
-                        <div class="link-description">@STAR_METHODE - Video tutorials</div>
-                    </a>
-                </div>
+            <div class="instructions-container">  
+                <div class="section-title">  
+                    <i class="fas fa-info-circle"></i> HOW TO USE  
+                </div>  
+              
+                <div class="instruction-step">  
+                    <div class="step-number">1</div>  
+                    <div class="step-content">  
+                        <h3>Get Your Authentication Token</h3>  
+                        <p>Choose your login method and paste your token:</p>  
+                        <ul style="color: var(--text-muted); margin-left: 20px; line-height: 1.8;">  
+                            <li><strong>JWT Token</strong> – Direct token from game</li>  
+                            <li><strong>Access Token</strong> – Garena OAuth token</li>  
+                            <li><strong>EAT Token</strong> – External access token </li>  
+                            <li><strong>UID:Password</strong> – Your account credentials</li>  
+                        </ul>  
+                        <p>After entering, click <span class="badge">AUTHENTICATE</span> to load your profile.</p>  
+                    </div>  
+                </div>  
+              
+                <div class="instruction-step">  
+                    <div class="step-number">2</div>  
+                    <div class="step-content">  
+                        <h3>Friend Management</h3>  
+                        <p>Once authenticated, you can:</p>  
+                        <ul style="color: var(--text-muted); margin-left: 20px; line-height: 1.8;">  
+                            <li><strong>Send Friend Request</strong> – Enter target UID and choose "Send Friend Request"</li>  
+                            <li><strong>Remove Friend</strong> – Enter friend's UID and choose "Remove Friend"</li>  
+                            <li><strong>Accept/Reject</strong> – Use the "Pending Requests" tab to handle incoming requests</li>  
+                        </ul>  
+                    </div>  
+                </div>  
+              
+                <div class="instruction-step">  
+                    <div class="step-number">3</div>  
+                    <div class="step-content">  
+                        <h3>View Lists</h3>  
+                        <p>Switch between tabs to see your current friends or pending friend requests. Friends display avatar, nickname, UID, region, and level. Pending requests have Accept/Reject buttons.</p>  
+                    </div>  
+                </div>  
+              
+                <div class="instruction-step">  
+                    <div class="step-number">4</div>  
+                    <div class="step-content">  
+                        <h3>Important Notes</h3>  
+                        <ul style="color: var(--text-muted); margin-left: 20px; line-height: 1.8;">  
+                            <li><i class="fas fa-globe"></i> Region is auto-detected from your token</li>  
+                            <li><i class="fas fa-clock"></i> Session expires after 10 minutes for security</li>  
+                            <li><i class="fas fa-shield-alt"></i> Your tokens are never stored on our server</li>  
+                            <li><i class="fas fa-dragon"></i> Developed by <strong>@danger_ff_like</strong></li>  
+                        </ul>  
+                    </div>  
+                </div>  
+              
+                <div class="links-grid">  
+                    <a href="https://t.me/danger_ff_like" target="_blank" class="link-card">  
+                        <div class="link-icon"><i class="fab fa-telegram"></i></div>  
+                        <div class="link-title">Developer</div>  
+                        <div class="link-description">@danger_ff_like</div>  
+                    </a>  
+                    <a href="https://t.me/freefirelikesdanger" target="_blank" class="link-card">  
+                        <div class="link-icon"><i class="fab fa-telegram"></i></div>  
+                        <div class="link-title">Main Channel</div>  
+                        <div class="link-description">@freefirelikesdanger</div>  
+                    </a>  
+                    <a href="https://t.me/dangerfreeapis" target="_blank" class="link-card">  
+                        <div class="link-icon"><i class="fas fa-code"></i></div>  
+                        <div class="link-title">APIs Channel</div>  
+                        <div class="link-description">@dangerfreeapis</div>  
+                    </a>  
+                </div>  
             </div>
         </div>
 
         <!-- Footer -->
         <div class="footer">
-            <div>© 2026 STAR_METHODE - Free Fire Friend Manager v4.0</div>
-            <div>Advanced Friend Management System | Auto-detect Region | No Token Storage</div>
+            <div>© 2026 DANGER - Free Fire Friend Manager v5.1</div>
+            <div>Advanced Friend Management System | Auto-detect Region | No Token Storage | Avatar Images</div>
             <div class="footer-links">
-                <a href="https://t.me/STAR_METHODE" target="_blank" class="footer-link">
+                <a href="https://t.me/danger_ff_like" target="_blank" class="footer-link">
                     <i class="fab fa-telegram"></i> Developer
                 </a>
-                <a href="https://t.me/STAR_METHODE" target="_blank" class="footer-link">
+                <a href="https://t.me/freefirelikesdanger" target="_blank" class="footer-link">
                     <i class="fab fa-telegram"></i> Main Channel
                 </a>
-                <a href="https://t.me/STAR_METHODE" target="_blank" class="footer-link">
+                <a href="https://t.me/dangerfreeapis" target="_blank" class="footer-link">
                     <i class="fas fa-code"></i> APIs Channel
                 </a>
                 <a href="/health" target="_blank" class="footer-link">
@@ -1532,599 +1743,593 @@
     </div>
 
     <script>
-    // ====== SYSTEM VARIABLES ======
-    let currentJWT = null;
-    let currentUserInfo = null;
-    let currentFriends = [];
-    let currentTokenType = 'token';
-    
-    // Define platform and region maps
-    const PLATFORM_MAP = {"3": {"name": "Facebook", "icon": "fab fa-facebook", "color": "#1877F2"}, "4": {"name": "Guest", "icon": "fas fa-user", "color": "#6c757d"}, "5": {"name": "VK", "icon": "fab fa-vk", "color": "#4C75A3"}, "8": {"name": "Google", "icon": "fab fa-google", "color": "#DB4437"}, "10": {"name": "Apple", "icon": "fab fa-apple", "color": "#000000"}, "11": {"name": "Twitter/X", "icon": "fab fa-twitter", "color": "#1DA1F2"}};
-    const REGION_CONFIGS = {"ind": {"url": "https://client.ind.freefiremobile.com", "host": "client.ind.freefiremobile.com", "name": "INDIA"}, "us": {"url": "https://client.us.freefiremobile.com", "host": "client.us.freefiremobile.com", "name": "USA/BRAZIL"}, "default": {"url": "https://clientbp.ggpolarbear.com", "host": "clientbp.common.ggbluefox.com", "name": "INTERNATIONAL"}};
-    
-    // ====== INITIALIZATION ======
-    document.addEventListener('DOMContentLoaded', function() {
-        // Clear any stored data
-        localStorage.removeItem('danger_friend_jwt');
-        localStorage.removeItem('danger_user_info');
+        // ====== SYSTEM VARIABLES ======
+        let currentJWT = null;
+        let currentUserInfo = null;
+        let currentFriends = [];
+        let currentPendingRequests = [];
+        let currentTokenType = 'token';
         
-        // Hide loading screen after 1.5 seconds
-        setTimeout(() => {
-            document.getElementById('loadingScreen').style.opacity = '0';
+        const PLATFORM_MAP = {"3": {"name": "Facebook", "icon": "fab fa-facebook", "color": "#1877F2"}, "4": {"name": "Guest", "icon": "fas fa-user", "color": "#6c757d"}, "5": {"name": "VK", "icon": "fab fa-vk", "color": "#4C75A3"}, "8": {"name": "Google", "icon": "fab fa-google", "color": "#DB4437"}, "10": {"name": "Apple", "icon": "fab fa-apple", "color": "#000000"}, "11": {"name": "Twitter/X", "icon": "fab fa-twitter", "color": "#1DA1F2"}};
+        const REGION_CONFIGS = {"ind": {"url": "https://client.ind.freefiremobile.com", "host": "client.ind.freefiremobile.com", "name": "INDIA"}, "us": {"url": "https://client.us.freefiremobile.com", "host": "client.us.freefiremobile.com", "name": "USA/BRAZIL"}, "default": {"url": "https://clientbp.ggpolarbear.com", "host": "clientbp.common.ggbluefox.com", "name": "INTERNATIONAL"}};
+        
+        // ====== INITIALIZATION ======
+        document.addEventListener('DOMContentLoaded', function() {
+            // Clear any stored data from previous session (optional)
+            localStorage.removeItem('danger_friend_jwt');
+            localStorage.removeItem('danger_user_info');
+            
             setTimeout(() => {
-                document.getElementById('loadingScreen').style.display = 'none';
-                document.getElementById('mainContainer').style.display = 'block';
-            }, 500);
-        }, 1500);
-        
-        // Setup event listeners
-        setupEventListeners();
-    });
-    
-    // ====== SETUP EVENT LISTENERS ======
-    function setupEventListeners() {
-        // Token type selection
-        document.querySelectorAll('.token-type-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.token-type-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                currentTokenType = this.getAttribute('data-type');
-                
-                // Update placeholder
-                const placeholders = {
-                    'token': 'Paste your JWT token here...',
-                    'access_token': 'Paste your Access Token here...',
-                    'eat_token': 'Paste your EAT Token here...',
-                    'uid_password': 'Enter UID:Password (e.g., 12345678:mypassword123)...'
-                };
-                
-                document.getElementById('userToken').placeholder = placeholders[currentTokenType];
-            });
+                document.getElementById('loadingScreen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loadingScreen').style.display = 'none';
+                    document.getElementById('mainContainer').style.display = 'block';
+                }, 500);
+            }, 1500);
+            
+            setupEventListeners();
         });
         
-        // Tab switching
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const tabId = this.getAttribute('data-tab');
-                
-                // Update active tab
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                
-                // Show active content
-                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-                document.getElementById(tabId + 'Tab').classList.add('active');
-                
-                // Load friends if friends tab is selected and we have JWT
-                if (tabId === 'friends' && currentJWT) {
-                    setTimeout(() => {
-                        loadFriends();
-                    }, 300);
-                }
-            });
-        });
-        
-        // Authentication button
-        document.getElementById('loginBtn').addEventListener('click', authenticateUser);
-        
-        // Clear button
-        document.getElementById('clearBtn').addEventListener('click', clearAll);
-        
-        // Process action button
-        document.getElementById('processBtn').addEventListener('click', processFriendAction);
-        
-        // Load friends button
-        document.getElementById('loadFriendsBtn').addEventListener('click', loadFriends);
-        
-        // Enter key for authentication
-        document.getElementById('userToken').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' && e.ctrlKey) {
-                authenticateUser();
-            }
-        });
-        
-        // Enter key for friend UID
-        document.getElementById('friendUid').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                processFriendAction();
-            }
-        });
-    }
-    
-    // ====== AUTHENTICATE USER ======
-    async function authenticateUser() {
-        const token = document.getElementById('userToken').value.trim();
-        
-        if (!token) {
-            showMessage('tokenMessage', 'error', 'Please enter your authentication token');
-            return;
-        }
-        
-        const btn = document.getElementById('loginBtn');
-        const loading = document.getElementById('tokenLoading');
-        const message = document.getElementById('tokenMessage');
-        
-        btn.disabled = true;
-        loading.style.display = 'block';
-        message.style.display = 'none';
-        
-        try {
-            // Process token through API
-            const baseUrl = window.location.origin;
-            const response = await fetch(`${baseUrl}/api/process-token`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    token: token,
-                    token_type: currentTokenType
-                })
+        function setupEventListeners() {
+            // Token type selection
+            document.querySelectorAll('.token-type-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.token-type-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentTokenType = this.getAttribute('data-type');
+                    
+                    const tokenContainer = document.querySelector('.token-input-container');
+                    const uidPassFields = document.getElementById('uidPasswordFields');
+                    
+                    if (currentTokenType === 'uid_password') {
+                        // Hide main token input, show UID/Password fields
+                        tokenContainer.style.display = 'none';
+                        uidPassFields.style.display = 'block';
+                    } else {
+                        // Show main token input, hide UID/Password fields
+                        tokenContainer.style.display = 'block';
+                        uidPassFields.style.display = 'none';
+                        
+                        // Update placeholder based on type
+                        const placeholders = {
+                            'token': 'Paste your JWT token here...',
+                            'access_token': 'Paste your Access Token here...',
+                            'eat_token': 'Paste your EAT Token here...',
+                        };
+                        document.getElementById('userToken').placeholder = placeholders[currentTokenType] || 'Enter token...';
+                    }
+                });
             });
             
-            if (!response.ok) {
-                throw new Error(`Server returned ${response.status}: ${response.statusText}`);
-            }
+            // Tab switching
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                    document.getElementById(tabId + 'Tab').classList.add('active');
+                    
+                    if (currentJWT) {
+                        if (tabId === 'friends') {
+                            setTimeout(loadFriends, 300);
+                        } else if (tabId === 'pending') {
+                            setTimeout(loadPendingRequests, 300);
+                        }
+                    }
+                });
+            });
             
-            const data = await response.json();
+            document.getElementById('loginBtn').addEventListener('click', authenticateUser);
+            document.getElementById('clearBtn').addEventListener('click', clearAll);
+            document.getElementById('processBtn').addEventListener('click', processFriendAction);
+            document.getElementById('loadFriendsBtn').addEventListener('click', loadFriends);
+            document.getElementById('loadPendingBtn').addEventListener('click', loadPendingRequests);
+            document.getElementById('checkUidBtn').addEventListener('click', checkUid);
             
-            if (data.success) {
-                currentJWT = data.jwt_token;
-                currentUserInfo = data;
-                
-                showMessage('tokenMessage', 'success', 
-                    `✅ Authenticated successfully! Welcome ${data.nickname || 'Player'} (${data.your_uid})`);
-                
-                showOperationStatus('success', 'Authenticated', 
-                    `Welcome ${data.nickname || 'Player'}! You can now manage your friends.`);
-                
-                // If on friends tab, load friends
-                if (document.querySelector('.tab-btn[data-tab="friends"]').classList.contains('active')) {
-                    setTimeout(() => {
-                        loadFriends();
-                    }, 1000);
+            document.getElementById('userToken').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && e.ctrlKey) authenticateUser();
+            });
+            document.getElementById('friendUid').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') processFriendAction();
+            });
+        }
+        async function logout() {
+            if (!confirm('Are you sure you want to logout? This will clear your session.')) return;
+            try {
+                const res = await fetch('/logout', { method: 'POST' });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    // Clear client-side data
+                    currentJWT = null;
+                    currentUserInfo = null;
+                    currentFriends = [];
+                    currentPendingRequests = [];
+                    // Hide all result sections
+                    document.getElementById('processResults').style.display = 'none';
+                    document.getElementById('friendsResults').style.display = 'none';
+                    document.getElementById('pendingResults').style.display = 'none';
+                    document.getElementById('uidCheckResult').style.display = 'none';
+                    showOperationStatus('success', 'Logged Out', 'Session cleared. Please authenticate again.');
                 }
-            } else {
-                showMessage('tokenMessage', 'error', data.error || 'Authentication failed');
-                currentJWT = null;
-                currentUserInfo = null;
+            } catch (error) {
+                showOperationStatus('error', 'Logout Error', error.message);
             }
-        } catch (error) {
-            console.error('Authentication error:', error);
-            showMessage('tokenMessage', 'error', 
-                `Network error: ${error.message}. Please check server connection.`);
-        } finally {
-            btn.disabled = false;
-            loading.style.display = 'none';
-        }
-    }
-    
-    // ====== GET PLAYER INFO ======
-    async function getPlayerInfo(targetUid) {
-        if (!currentJWT) {
-            return {
-                success: false,
-                error: 'Please authenticate first'
-            };
         }
         
-        try {
-            const baseUrl = window.location.origin;
-            const response = await fetch(
-                `${baseUrl}/api/get-player-info?token=${encodeURIComponent(currentJWT)}&uid=${targetUid}`
-            );
-            
-            if (!response.ok) {
-                throw new Error(`Server returned ${response.status}: ${response.statusText}`);
-            }
-            
-            const data = await response.json();
-            return data;
-            
-        } catch (error) {
-            console.error('Get player info error:', error);
-            return {
-                success: false,
-                error: `Network error: ${error.message}`
-            };
-        }
-    }
-    
-    // ====== LOAD FRIENDS LIST ======
-    async function loadFriends() {
-        if (!currentJWT) {
-            showMessage('friendsMessage', 'error', 'Please authenticate first');
-            return;
-        }
-        
-        const btn = document.getElementById('loadFriendsBtn');
-        const loading = document.getElementById('friendsLoading');
-        const message = document.getElementById('friendsMessage');
-        const results = document.getElementById('friendsResults');
-        
-        btn.disabled = true;
-        loading.style.display = 'block';
-        message.style.display = 'none';
-        results.style.display = 'none';
-        
-        try {
-            const baseUrl = window.location.origin;
-            const response = await fetch(
-                `${baseUrl}/get_friends_list?token=${encodeURIComponent(currentJWT)}`
-            );
-            
-            if (!response.ok) {
-                throw new Error(`Server returned ${response.status}: ${response.statusText}`);
-            }
-            
-            const data = await response.json();
-            
-            if (data.success) {
-                currentFriends = data.friends || [];
-                
-                // Display account info
-                displayAccountInfo('friendsAccountInfo', data);
-                
-                // Display friends count
-                document.getElementById('friendsCountValue').textContent = data.total_friends;
-                
-                // Display friends list
-                displayFriendsList(data.friends);
-                
-                results.style.display = 'block';
-                
-                showOperationStatus('success', 'Friends Loaded', 
-                    `Successfully loaded ${data.total_friends} friends`);
-            } else {
-                showMessage('friendsMessage', 'error', data.error || 'Failed to load friends');
-            }
-        } catch (error) {
-            console.error('Load friends error:', error);
-            showMessage('friendsMessage', 'error', 
-                `Network error: ${error.message}. Please check server connection.`);
-        } finally {
-            btn.disabled = false;
-            loading.style.display = 'none';
-        }
-    }
-    
-    // ====== PROCESS FRIEND ACTION ======
-    async function processFriendAction() {
-        const friendUid = document.getElementById('friendUid').value.trim();
-        const actionType = document.getElementById('actionType').value;
-        
-        if (!friendUid) {
-            showMessage('processMessage', 'error', 'Please enter friend UID');
-            return;
-        }
-        
-        if (!currentJWT) {
-            showMessage('processMessage', 'error', 'Please authenticate first');
-            return;
-        }
-        
-        const btn = document.getElementById('processBtn');
-        const loading = document.getElementById('processLoading');
-        const message = document.getElementById('processMessage');
-        const results = document.getElementById('processResults');
-        
-        btn.disabled = true;
-        loading.style.display = 'block';
-        message.style.display = 'none';
-        results.style.display = 'none';
-        
-        try {
-            // First get player info
-            const playerInfo = await getPlayerInfo(friendUid);
-            
-            const baseUrl = window.location.origin;
-            const endpoint = actionType === 'add' ? '/adding_friend' : '/remove_friend';
-            const response = await fetch(
-                `${baseUrl}${endpoint}?token=${encodeURIComponent(currentJWT)}&friend_uid=${friendUid}`
-            );
-            
-            if (!response.ok) {
-                throw new Error(`Server returned ${response.status}: ${response.statusText}`);
-            }
-            
-            const data = await response.json();
-            
-            if (data.success) {
-                showMessage('processMessage', 'success', data.message);
-                
-                // Display player info
-                displayPlayerInfo('processAccountInfo', playerInfo, data);
-                results.style.display = 'block';
-                
-                showOperationStatus('success', 
-                    actionType === 'add' ? 'Friend Request Sent' : 'Friend Removed',
-                    data.message);
-                
-                // Clear input
-                document.getElementById('friendUid').value = '';
-                
-                // If on friends tab and action was remove, refresh friends list
-                if (actionType === 'remove' && document.querySelector('.tab-btn[data-tab="friends"]').classList.contains('active')) {
-                    setTimeout(() => {
-                        loadFriends();
-                    }, 1500);
+        async function authenticateUser() {
+            let token;
+            if (currentTokenType === 'uid_password') {
+                const uid = document.getElementById('uidInput').value.trim();
+                const password = document.getElementById('passwordInput').value.trim();
+                if (!uid || !password) {
+                    showMessage('tokenMessage', 'error', 'Please enter both UID and password');
+                    return;
                 }
+                token = uid + ':' + password;
             } else {
-                showMessage('processMessage', 'error', data.error || 'Action failed');
-                showOperationStatus('error', 'Action Failed', data.error || 'Action failed');
-            }
-        } catch (error) {
-            console.error('Process friend action error:', error);
-            showMessage('processMessage', 'error', 
-                `Network error: ${error.message}. Please check your connection.`);
-            showOperationStatus('error', 'Network Error', 'Please check your connection.');
-        } finally {
-            btn.disabled = false;
-            loading.style.display = 'none';
-        }
-    }
-    
-    // ====== REMOVE FRIEND FROM LIST ======
-    async function removeFriend(friendUid, friendName) {
-        if (!confirm(`Remove "${friendName}" (UID: ${friendUid}) from your friends?`)) {
-            return;
-        }
-        
-        showOperationStatus('processing', 'Removing Friend', `Removing ${friendName}...`);
-        
-        try {
-            // First get player info
-            const playerInfo = await getPlayerInfo(friendUid);
-            
-            const baseUrl = window.location.origin;
-            const response = await fetch(
-                `${baseUrl}/remove_friend?token=${encodeURIComponent(currentJWT)}&friend_uid=${friendUid}`
-            );
-            
-            if (!response.ok) {
-                throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+                token = document.getElementById('userToken').value.trim();
+                if (!token) {
+                    showMessage('tokenMessage', 'error', 'Please enter your authentication token');
+                    return;
+                }
             }
             
-            const data = await response.json();
+            const btn = document.getElementById('loginBtn');
+            const loading = document.getElementById('tokenLoading');
+            const message = document.getElementById('tokenMessage');
             
-            if (data.success) {
-                showOperationStatus('success', 'Friend Removed', data.message);
+            btn.disabled = true;
+            loading.style.display = 'block';
+            message.style.display = 'none';
+            
+            try {
+                const baseUrl = window.location.origin;
+                const response = await fetch(`${baseUrl}/api/process-token`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({token: token, token_type: currentTokenType})
+                });
                 
-                // Remove from current list
-                currentFriends = currentFriends.filter(friend => friend.uid != friendUid);
+                if (!response.ok) throw new Error(`Server returned ${response.status}`);
+                const data = await response.json();
                 
-                // Refresh display
-                displayFriendsList(currentFriends);
-                
-                // Update count
-                document.getElementById('friendsCountValue').textContent = currentFriends.length;
-                
-                // Display player info in friends tab
-                displayPlayerInfo('friendsAccountInfo', playerInfo, data);
-            } else {
-                showOperationStatus('error', 'Remove Failed', data.error || 'Failed to remove friend');
+                if (data.success) {
+                    currentJWT = data.jwt_token;
+                    currentUserInfo = data;
+                    showMessage('tokenMessage', 'success', `✅ Authenticated successfully! Welcome ${data.nickname || 'Player'} (${data.your_uid})`);
+                    showOperationStatus('success', 'Authenticated', `Welcome ${data.nickname || 'Player'}!`);
+                    
+                    const activeTab = document.querySelector('.tab-btn.active').getAttribute('data-tab');
+                    if (activeTab === 'friends') setTimeout(loadFriends, 1000);
+                    else if (activeTab === 'pending') setTimeout(loadPendingRequests, 1000);
+                } else {
+                    showMessage('tokenMessage', 'error', data.error || 'Authentication failed');
+                    currentJWT = null;
+                    currentUserInfo = null;
+                }
+            } catch (error) {
+                showMessage('tokenMessage', 'error', `Network error: ${error.message}`);
+            } finally {
+                btn.disabled = false;
+                loading.style.display = 'none';
             }
-        } catch (error) {
-            console.error('Remove friend error:', error);
-            showOperationStatus('error', 'Network Error', 'Please check your connection.');
         }
-    }
-    
-    // ====== DISPLAY ACCOUNT INFO ======
-    function displayAccountInfo(containerId, data) {
-        const container = document.getElementById(containerId);
         
-        // Get platform name
-        const platformName = data.platform_name || (PLATFORM_MAP[data.platform] ? PLATFORM_MAP[data.platform].name : `Platform ${data.platform}`);
+        async function checkUid() {
+            const friendUid = document.getElementById('friendUid').value.trim();
+            if (!friendUid) {
+                showOperationStatus('error', 'Check UID', 'Please enter a UID');
+                return;
+            }
+            
+            const checkDiv = document.getElementById('uidCheckResult');
+            const nicknameSpan = document.getElementById('checkNickname');
+            const regionSpan = document.getElementById('checkRegion');
+            const statusBadge = document.getElementById('checkStatusBadge');
+            const messageDiv = document.getElementById('checkMessage');
+            
+            checkDiv.style.display = 'none';
+            
+            try {
+                const baseUrl = window.location.origin;
+                const response = await fetch(`${baseUrl}/api/check_player?uid=${friendUid}`);
+                if (!response.ok) throw new Error(`Server returned ${response.status}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    nicknameSpan.textContent = data.nickname || 'No nickname';
+                    regionSpan.textContent = data.region || 'No region';
+                    
+                    // Set status badge
+                    statusBadge.textContent = data.status.toUpperCase();
+                    statusBadge.className = 'status-badge status-' + data.status;
+                    
+                    let advice = '';
+                    if (currentUserInfo) {
+                        const myRegion = (currentUserInfo.region || '').toUpperCase();
+                        const targetRegion = (data.region || '').toUpperCase();
+                        if (data.status === 'active') {
+                            if (myRegion === targetRegion) {
+                                advice = '✅ Region same, you can send request.';
+                            } else {
+                                advice = '❌ Region different, cannot add friend.';
+                            }
+                        } else if (data.status === 'ghost') {
+                            advice = '👻 Ghost account (never logged in). Needs first login to lock region.';
+                        } else if (data.status === 'not_found') {
+                            advice = '❓ UID not found in Free Fire database.';
+                        }
+                    } else {
+                        advice = 'ℹ️ Authenticate first to compare regions.';
+                    }
+                    messageDiv.textContent = advice;
+                    
+                    checkDiv.style.display = 'block';
+                } else {
+                    showOperationStatus('error', 'Check UID', data.error || 'Failed to check UID');
+                }
+            } catch (error) {
+                showOperationStatus('error', 'Check UID', `Network error: ${error.message}`);
+            }
+        }
         
-        // Get region name
-        const regionKey = (data.region || '').toUpperCase();
-        const regionName = data.region_name || (REGION_CONFIGS[regionKey] ? REGION_CONFIGS[regionKey].name : data.region || 'Unknown');
+        async function loadFriends() {
+            if (!currentJWT) {
+                showMessage('friendsMessage', 'error', 'Please authenticate first');
+                return;
+            }
+            
+            const btn = document.getElementById('loadFriendsBtn');
+            const loading = document.getElementById('friendsLoading');
+            const message = document.getElementById('friendsMessage');
+            const results = document.getElementById('friendsResults');
+            
+            btn.disabled = true;
+            loading.style.display = 'block';
+            message.style.display = 'none';
+            results.style.display = 'none';
+            
+            try {
+                const baseUrl = window.location.origin;
+                const response = await fetch(`${baseUrl}/get_friends_list?token=${encodeURIComponent(currentJWT)}`);
+                if (!response.ok) throw new Error(`Server returned ${response.status}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentFriends = data.friends || [];
+                    displayAccountInfo('friendsAccountInfo', data);
+                    document.getElementById('friendsCountValue').textContent = data.total_friends;
+                    displayFriendsList(data.friends);
+                    results.style.display = 'block';
+                    showOperationStatus('success', 'Friends Loaded', `Loaded ${data.total_friends} friends`);
+                } else {
+                    showMessage('friendsMessage', 'error', data.error || 'Failed to load friends');
+                }
+            } catch (error) {
+                showMessage('friendsMessage', 'error', `Network error: ${error.message}`);
+            } finally {
+                btn.disabled = false;
+                loading.style.display = 'none';
+            }
+        }
         
-        container.innerHTML = `
-            <div class="info-card">
-                <div class="info-label">
-                    <i class="fas fa-id-card"></i> Your UID
-                </div>
-                <div class="info-value">${data.your_uid || 'N/A'}</div>
-            </div>
-            <div class="info-card">
-                <div class="info-label">
-                    <i class="fas fa-user-tag"></i> Nickname
-                </div>
-                <div class="info-value">${data.nickname || 'Unknown'}</div>
-            </div>
-            <div class="info-card">
-                <div class="info-label">
-                    <i class="fas fa-globe"></i> Region
-                </div>
-                <div class="info-value">${regionKey}</div>
-            </div>
-            <div class="info-card">
-                <div class="info-label">
-                    <i class="fas fa-laptop"></i> Platform
-                </div>
-                <div class="info-value">${platformName}</div>
-            </div>
-        `;
-    }
-    
-    // ====== DISPLAY PLAYER INFO ======
-    function displayPlayerInfo(containerId, playerData, actionData = null) {
-        const container = document.getElementById(containerId);
+        async function loadPendingRequests() {
+            if (!currentJWT) {
+                showMessage('pendingMessage', 'error', 'Please authenticate first');
+                return;
+            }
+            
+            const btn = document.getElementById('loadPendingBtn');
+            const loading = document.getElementById('pendingLoading');
+            const message = document.getElementById('pendingMessage');
+            const results = document.getElementById('pendingResults');
+            
+            btn.disabled = true;
+            loading.style.display = 'block';
+            message.style.display = 'none';
+            results.style.display = 'none';
+            
+            try {
+                const baseUrl = window.location.origin;
+                const response = await fetch(`${baseUrl}/get_pending_requests?token=${encodeURIComponent(currentJWT)}`);
+                if (!response.ok) throw new Error(`Server returned ${response.status}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentPendingRequests = data.pending || [];
+                    displayAccountInfo('pendingAccountInfo', data);
+                    document.getElementById('pendingCountValue').textContent = data.total_pending;
+                    displayPendingRequests(data.pending);
+                    results.style.display = 'block';
+                    showOperationStatus('success', 'Pending Loaded', `Found ${data.total_pending} pending requests`);
+                } else {
+                    showMessage('pendingMessage', 'error', data.error || 'Failed to load pending requests');
+                }
+            } catch (error) {
+                showMessage('pendingMessage', 'error', `Network error: ${error.message}`);
+            } finally {
+                btn.disabled = false;
+                loading.style.display = 'none';
+            }
+        }
         
-        if (!playerData || !playerData.success) {
-            // Show basic info from action data
+        async function processFriendAction() {
+            const friendUid = document.getElementById('friendUid').value.trim();
+            const actionType = document.getElementById('actionType').value;
+            
+            if (!friendUid) {
+                showMessage('processMessage', 'error', 'Please enter friend UID');
+                return;
+            }
+            if (!currentJWT) {
+                showMessage('processMessage', 'error', 'Please authenticate first');
+                return;
+            }
+            
+            const btn = document.getElementById('processBtn');
+            const loading = document.getElementById('processLoading');
+            const message = document.getElementById('processMessage');
+            const results = document.getElementById('processResults');
+            
+            btn.disabled = true;
+            loading.style.display = 'block';
+            message.style.display = 'none';
+            results.style.display = 'none';
+            
+            try {
+                const baseUrl = window.location.origin;
+                let endpoint;
+                switch(actionType) {
+                    case 'add': endpoint = '/adding_friend'; break;
+                    case 'remove': endpoint = '/remove_friend'; break;
+                    case 'accept': endpoint = '/accept_friend_request'; break;
+                    case 'reject': endpoint = '/reject_friend_request'; break;
+                    default: throw new Error('Invalid action type');
+                }
+                
+                // For add friend, use POST with credentials (session cookie)
+                if (actionType === 'add') {
+                    const url = `${baseUrl}${endpoint}?token=${encodeURIComponent(currentJWT)}&friend_uid=${friendUid}`;
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        credentials: 'include'
+                    });
+                    if (!response.ok) throw new Error(`Server returned ${response.status}`);
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        showMessage('processMessage', 'success', data.message);
+                        displayAccountInfo('processAccountInfo', data);
+                        results.style.display = 'block';
+                        showOperationStatus('success', 'Action Completed', data.message);
+                        document.getElementById('friendUid').value = '';
+                    } else {
+                        showMessage('processMessage', 'error', data.error || 'Action failed');
+                        showOperationStatus('error', 'Action Failed', data.error || 'Action failed');
+                    }
+                } else {
+                    // For other actions, use GET (no credentials needed)
+                    const response = await fetch(`${baseUrl}${endpoint}?token=${encodeURIComponent(currentJWT)}&friend_uid=${friendUid}`);
+                    if (!response.ok) throw new Error(`Server returned ${response.status}`);
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        showMessage('processMessage', 'success', data.message);
+                        displayAccountInfo('processAccountInfo', data);
+                        results.style.display = 'block';
+                        showOperationStatus('success', 'Action Completed', data.message);
+                        document.getElementById('friendUid').value = '';
+                        
+                        if (actionType === 'remove' && document.querySelector('.tab-btn[data-tab="friends"]').classList.contains('active')) {
+                            setTimeout(loadFriends, 1500);
+                        } else if ((actionType === 'accept' || actionType === 'reject') && document.querySelector('.tab-btn[data-tab="pending"]').classList.contains('active')) {
+                            setTimeout(loadPendingRequests, 1500);
+                        }
+                    } else {
+                        showMessage('processMessage', 'error', data.error || 'Action failed');
+                        showOperationStatus('error', 'Action Failed', data.error || 'Action failed');
+                    }
+                }
+            } catch (error) {
+                showMessage('processMessage', 'error', `Network error: ${error.message}`);
+                showOperationStatus('error', 'Network Error', error.message);
+            } finally {
+                btn.disabled = false;
+                loading.style.display = 'none';
+            }
+        }
+        
+        async function removeFriend(friendUid, friendName) {
+            if (!confirm(`Remove "${friendName}" (UID: ${friendUid}) from your friends?`)) return;
+            showOperationStatus('processing', 'Removing Friend', `Removing ${friendName}...`);
+            
+            try {
+                const baseUrl = window.location.origin;
+                const response = await fetch(`${baseUrl}/remove_friend?token=${encodeURIComponent(currentJWT)}&friend_uid=${friendUid}`);
+                if (!response.ok) throw new Error(`Server returned ${response.status}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    showOperationStatus('success', 'Friend Removed', data.message);
+                    currentFriends = currentFriends.filter(f => f.uid != friendUid);
+                    displayFriendsList(currentFriends);
+                    document.getElementById('friendsCountValue').textContent = currentFriends.length;
+                } else {
+                    showOperationStatus('error', 'Remove Failed', data.error || 'Failed to remove friend');
+                }
+            } catch (error) {
+                showOperationStatus('error', 'Network Error', error.message);
+            }
+        }
+        
+        async function processPendingAction(friendUid, friendName, actionType) {
+            if (!confirm(`${actionType === 'accept' ? 'Accept' : 'Reject'} friend request from "${friendName}" (UID: ${friendUid})?`)) return;
+            showOperationStatus('processing', actionType === 'accept' ? 'Accepting' : 'Rejecting', `Processing ${friendName}...`);
+            
+            try {
+                const baseUrl = window.location.origin;
+                const endpoint = actionType === 'accept' ? '/accept_friend_request' : '/reject_friend_request';
+                const response = await fetch(`${baseUrl}${endpoint}?token=${encodeURIComponent(currentJWT)}&friend_uid=${friendUid}`);
+                if (!response.ok) throw new Error(`Server returned ${response.status}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    showOperationStatus('success', actionType === 'accept' ? 'Request Accepted' : 'Request Rejected', data.message);
+                    setTimeout(loadPendingRequests, 1000);
+                } else {
+                    showOperationStatus('error', 'Action Failed', data.error || 'Failed to process request');
+                }
+            } catch (error) {
+                showOperationStatus('error', 'Network Error', error.message);
+            }
+        }
+        
+        function displayAccountInfo(containerId, data) {
+            const container = document.getElementById(containerId);
+            const platformName = data.platform_name || (PLATFORM_MAP[data.platform] ? PLATFORM_MAP[data.platform].name : `Platform ${data.platform}`);
+            const regionName = (data.region || '').toUpperCase();
+            
             container.innerHTML = `
                 <div class="info-card">
-                    <div class="info-label">
-                        <i class="fas fa-id-card"></i> Target UID
-                    </div>
-                    <div class="info-value">${actionData?.target_uid || 'Unknown'}</div>
+                    <div class="info-label"><i class="fas fa-id-card"></i> Your UID</div>
+                    <div class="info-value">${data.your_uid || 'N/A'}</div>
                 </div>
                 <div class="info-card">
-                    <div class="info-label">
-                        <i class="fas fa-user-tag"></i> Action Status
-                    </div>
-                    <div class="info-value">${actionData?.status || 'Unknown'}</div>
+                    <div class="info-label"><i class="fas fa-user-tag"></i> Nickname</div>
+                    <div class="info-value">${data.nickname || 'Unknown'}</div>
                 </div>
                 <div class="info-card">
-                    <div class="info-label">
-                        <i class="fas fa-server"></i> Server
-                    </div>
-                    <div class="info-value">${actionData?.server || 'Unknown'}</div>
+                    <div class="info-label"><i class="fas fa-globe"></i> Region</div>
+                    <div class="info-value">${regionName}</div>
                 </div>
                 <div class="info-card">
-                    <div class="info-label">
-                        <i class="fas fa-clock"></i> Time
-                    </div>
-                    <div class="info-value">${actionData?.time || new Date().toLocaleString()}</div>
+                    <div class="info-label"><i class="fas fa-laptop"></i> Platform</div>
+                    <div class="info-value">${platformName}</div>
                 </div>
             `;
-            return;
         }
         
-        // Show detailed player info
-        container.innerHTML = `
-            <div class="info-card">
-                <div class="info-label">
-                    <i class="fas fa-id-card"></i> UID
-                </div>
-                <div class="info-value">${playerData.uid || 'N/A'}</div>
-            </div>
-            <div class="info-card">
-                <div class="info-label">
-                    <i class="fas fa-user-tag"></i> Nickname
-                </div>
-                <div class="info-value">${playerData.nickname || 'Unknown'}</div>
-            </div>
-            <div class="info-card">
-                <div class="info-label">
-                    <i class="fas fa-level-up-alt"></i> Level
-                </div>
-                <div class="info-value">${playerData.level || 0}</div>
-            </div>
-            <div class="info-card">
-                <div class="info-label">
-                    <i class="fas fa-heart"></i> Likes
-                </div>
-                <div class="info-value">${playerData.likes || 0}</div>
-            </div>
-            <div class="info-card">
-                <div class="info-label">
-                    <i class="fas fa-globe"></i> Region
-                </div>
-                <div class="info-value">${playerData.region || 'Unknown'}</div>
-            </div>
-            <div class="info-card">
-                <div class="info-label">
-                    <i class="fas fa-gamepad"></i> Total Matches
-                </div>
-                <div class="info-value">${playerData.total_matches || 0}</div>
-            </div>
-            <div class="info-card">
-                <div class="info-label">
-                    <i class="fas fa-trophy"></i> Wins
-                </div>
-                <div class="info-value">${playerData.wins || 0}</div>
-            </div>
-            <div class="info-card">
-                <div class="info-label">
-                    <i class="fas fa-crown"></i> Rank
-                </div>
-                <div class="info-value">${playerData.rank || 0}</div>
-            </div>
-        `;
-    }
-    
-    // ====== DISPLAY FRIENDS LIST ======
-    function displayFriendsList(friends) {
-        const container = document.getElementById('friendsList');
-        const noFriends = document.getElementById('noFriends');
-        
-        if (friends && friends.length > 0) {
-            container.innerHTML = friends.map(friend => `
-                <div class="friend-card">
-                    <div class="friend-header">
-                        <div class="friend-uid">${friend.uid}</div>
-                    </div>
-                    <div class="friend-name">${friend.nickname}</div>
-                    <div class="friend-actions">
-                        <button class="friend-action-btn btn-danger" 
-                                onclick="removeFriend('${friend.uid}', '${friend.nickname}')">
-                            <i class="fas fa-trash"></i> REMOVE
-                        </button>
-                    </div>
-                </div>
-            `).join('');
+        function displayFriendsList(friends) {
+            const container = document.getElementById('friendsList');
+            const noFriends = document.getElementById('noFriends');
             
-            container.style.display = 'grid';
-            noFriends.style.display = 'none';
-        } else {
-            container.style.display = 'none';
-            noFriends.style.display = 'block';
-        }
-    }
-    
-    // ====== SHOW MESSAGE ======
-    function showMessage(containerId, type, message) {
-        const container = document.getElementById(containerId);
-        container.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
-        container.className = `message ${type}`;
-        container.style.display = 'block';
-        
-        // Auto-hide success messages after 5 seconds
-        if (type === 'success') {
-            setTimeout(() => {
+            if (friends && friends.length > 0) {
+                container.innerHTML = friends.map(f => `
+                    <div class="friend-card">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <img src="https://raw.githubusercontent.com/danger738/danger-item-library/main/PNG/${f.avatarId}.png" 
+                                 alt="Avatar" style="width: 50px; height: 50px; border-radius: 10px; border: 2px solid var(--primary); object-fit: cover;"
+                                 onerror="this.src='https://raw.githubusercontent.com/danger738/danger-item-library/main/PNG/902000003.png'">
+                            <div style="flex: 1;">
+                                <div class="friend-header">
+                                    <div class="friend-uid">${f.uid}</div>
+                                </div>
+                                <div class="friend-name">${f.nickname}</div>
+                                <div style="color: var(--text-muted); font-size: 0.9rem;">${f.region} | Level ${f.level}</div>
+                            </div>
+                        </div>
+                        <div class="friend-actions">
+                            <button class="friend-action-btn btn-danger" onclick="removeFriend('${f.uid}', '${f.nickname}')">
+                                <i class="fas fa-trash"></i> REMOVE
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+                container.style.display = 'grid';
+                noFriends.style.display = 'none';
+            } else {
                 container.style.display = 'none';
-            }, 5000);
+                noFriends.style.display = 'block';
+            }
         }
-    }
-    
-    // ====== SHOW OPERATION STATUS ======
-    function showOperationStatus(type, title, message) {
-        const statusDiv = document.getElementById('operationStatus');
-        const statusClass = {
-            'success': 'status-success',
-            'error': 'status-error',
-            'processing': 'status-processing'
-        }[type] || 'status-processing';
         
-        statusDiv.innerHTML = `
-            <div class="status-card ${statusClass}">
-                <div class="status-title">
-                    ${type === 'success' ? '✅' : type === 'error' ? '❌' : '🔄'} ${title}
+        function displayPendingRequests(pending) {
+            const container = document.getElementById('pendingList');
+            const noPending = document.getElementById('noPending');
+            
+            if (pending && pending.length > 0) {
+                container.innerHTML = pending.map(p => `
+                    <div class="pending-request-card">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <img src="https://raw.githubusercontent.com/danger738/danger-item-library/main/PNG/${p.avatarId}.png" 
+                                 alt="Avatar" style="width: 50px; height: 50px; border-radius: 10px; border: 2px solid var(--accent); object-fit: cover;"
+                                 onerror="this.src='https://raw.githubusercontent.com/danger738/danger-item-library/main/PNG/902000003.png'">
+                            <div style="flex: 1;">
+                                <div class="friend-header">
+                                    <div class="friend-uid">${p.uid}</div>
+                                </div>
+                                <div class="friend-name">${p.nickname}</div>
+                                <div style="color: var(--text-muted); font-size: 0.9rem;">${p.region} | Level ${p.level}</div>
+                            </div>
+                        </div>
+                        <div class="pending-actions">
+                            <button class="pending-action-btn accept" onclick="processPendingAction('${p.uid}', '${p.nickname}', 'accept')">
+                                <i class="fas fa-check"></i> ACCEPT
+                            </button>
+                            <button class="pending-action-btn reject" onclick="processPendingAction('${p.uid}', '${p.nickname}', 'reject')">
+                                <i class="fas fa-times"></i> REJECT
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+                container.style.display = 'grid';
+                noPending.style.display = 'none';
+            } else {
+                container.style.display = 'none';
+                noPending.style.display = 'block';
+            }
+        }
+        
+        function showMessage(containerId, type, message) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
+            container.className = `message ${type}`;
+            container.style.display = 'block';
+            if (type === 'success') setTimeout(() => container.style.display = 'none', 5000);
+        }
+        
+        function showOperationStatus(type, title, message) {
+            const statusDiv = document.getElementById('operationStatus');
+            const statusClass = {
+                'success': 'status-success',
+                'error': 'status-error',
+                'processing': 'status-processing',
+                'info': 'status-processing'
+            }[type] || 'status-processing';
+            
+            statusDiv.innerHTML = `
+                <div class="status-card ${statusClass}">
+                    <div class="status-title">${type === 'success' ? '✅' : type === 'error' ? '❌' : type === 'info' ? 'ℹ️' : '🔄'} ${title}</div>
+                    <div class="status-message">${message}</div>
                 </div>
-                <div class="status-message">${message}</div>
-            </div>
-        `;
-        
-        statusDiv.style.display = 'block';
-        
-        // Auto-hide after 5 seconds for success/error
-        if (type !== 'processing') {
-            setTimeout(() => {
-                statusDiv.style.display = 'none';
-            }, 5000);
+            `;
+            statusDiv.style.display = 'block';
+            if (type !== 'processing') setTimeout(() => statusDiv.style.display = 'none', 5000);
         }
-    }
-    
-    // ====== CLEAR ALL ======
-    function clearAll() {
-        currentJWT = null;
-        currentUserInfo = null;
-        currentFriends = [];
         
-        document.getElementById('userToken').value = '';
-        document.getElementById('friendUid').value = '';
-        document.getElementById('tokenMessage').style.display = 'none';
-        document.getElementById('processMessage').style.display = 'none';
-        document.getElementById('friendsMessage').style.display = 'none';
-        document.getElementById('processResults').style.display = 'none';
-        document.getElementById('friendsResults').style.display = 'none';
+        function clearAll() {
+            currentJWT = null;
+            currentUserInfo = null;
+            currentFriends = [];
+            currentPendingRequests = [];
+            document.getElementById('userToken').value = '';
+            document.getElementById('uidInput').value = '';
+            document.getElementById('passwordInput').value = '';
+            document.getElementById('friendUid').value = '';
+            document.getElementById('tokenMessage').style.display = 'none';
+            document.getElementById('processMessage').style.display = 'none';
+            document.getElementById('friendsMessage').style.display = 'none';
+            document.getElementById('pendingMessage').style.display = 'none';
+            document.getElementById('processResults').style.display = 'none';
+            document.getElementById('friendsResults').style.display = 'none';
+            document.getElementById('pendingResults').style.display = 'none';
+            document.getElementById('uidCheckResult').style.display = 'none';
+            showOperationStatus('info', 'Cleared', 'All data cleared. Please authenticate again.');
+        }
         
-        showOperationStatus('info', 'Cleared', 'All data has been cleared. Please authenticate again.');
-    }
-</script>
+        window.removeFriend = removeFriend;
+        window.processPendingAction = processPendingAction;
+    </script>
 </body>
 </html>
