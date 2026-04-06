@@ -21,7 +21,6 @@ import os
 import httpx
 import asyncio
 import ssl
-import aiohttp
 from google.protobuf import json_format
 
 # -----------------------------
