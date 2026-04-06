@@ -1,5 +1,4 @@
-from flask import Flask, request, jsonify, send_from_directory, render_template_string
-import sys
+from flask import Flask, request, jsonify
 import jwt
 import requests
 from Crypto.Cipher import AES
@@ -19,9 +18,6 @@ import warnings
 import base64
 import os
 import httpx
-import asyncio
-import ssl
-import aiohttp
 from google.protobuf import json_format
 
 # -----------------------------
@@ -64,8 +60,11 @@ REGION_CONFIGS = {
 
 # External API URLs
 EAT_TOKEN_URL = "https://ticket.kiosgamer.co.id"
-ACCESS_TO_JWT_URL = "https://kallu-access-to-jwt.vercel.app/token?access_token={access_token}"
-GUEST_TO_JWT_URL = "https://kallu-access-to-jwt.vercel.app/token?uid={uid}&password={password}"
+JWT_GATEWAY_BASE_URL = "https://kallu-access-to-jwt.vercel.app"
+JWT_GATEWAY_ENDPOINTS = [
+    "/token",
+    "/api/token"
+]
 
 # Player Info Configuration
 MAIN_KEY = base64.b64decode('WWcmdGMlREV1aDYlWmNeOA==')
@@ -186,6 +185,38 @@ def process_eat_token(eat_token):
     except Exception as e:
         return None, f"EAT token processing error: {str(e)}"
 
+def request_jwt_gateway(payload):
+    """Try multiple gateway endpoint/method combinations to get JWT."""
+    headers = {
+        "Accept": "application/json, text/plain, */*",
+        "User-Agent": USERAGENT
+    }
+
+    attempts = []
+
+    for endpoint in JWT_GATEWAY_ENDPOINTS:
+        url = f"{JWT_GATEWAY_BASE_URL}{endpoint}"
+
+        # Some deployments expose GET query endpoints
+        try:
+            response = requests.get(url, params=payload, headers=headers, verify=False, timeout=12)
+            attempts.append(f"GET {endpoint} -> {response.status_code}")
+            if response.status_code == 200:
+                return response, None
+        except requests.RequestException as e:
+            attempts.append(f"GET {endpoint} -> {type(e).__name__}")
+
+        # Some deployments expose POST json endpoints
+        try:
+            response = requests.post(url, json=payload, headers=headers, verify=False, timeout=12)
+            attempts.append(f"POST {endpoint} -> {response.status_code}")
+            if response.status_code == 200:
+                return response, None
+        except requests.RequestException as e:
+            attempts.append(f"POST {endpoint} -> {type(e).__name__}")
+
+    return None, "; ".join(attempts)
+
 def convert_to_jwt(token, token_type):
     """Convert various token types to JWT"""
     try:
@@ -195,8 +226,10 @@ def convert_to_jwt(token, token_type):
             
         elif token_type == 'access_token':
             # Convert access token to JWT
-            url = ACCESS_TO_JWT_URL.format(access_token=token)
-            response = requests.get(url, verify=False, timeout=10)
+            response, attempts_error = request_jwt_gateway({"access_token": token})
+            
+            if not response:
+                return None, f"JWT gateway unavailable ({attempts_error})"
             
             if response.status_code != 200:
                 return None, f"Failed to convert access token to JWT: HTTP {response.status_code}"
@@ -236,8 +269,10 @@ def convert_to_jwt(token, token_type):
             uid = uid.strip()
             password = password.strip()
             
-            url = GUEST_TO_JWT_URL.format(uid=uid, password=password)
-            response = requests.get(url, verify=False, timeout=10)
+            response, attempts_error = request_jwt_gateway({"uid": uid, "password": password})
+            
+            if not response:
+                return None, f"JWT gateway unavailable for UID:Password ({attempts_error})"
             
             if response.status_code != 200:
                 return None, f"Failed to convert UID:Password to JWT: HTTP {response.status_code}"
