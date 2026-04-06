@@ -63,8 +63,8 @@ REGION_CONFIGS = {
 
 # External API URLs
 EAT_TOKEN_URL = "https://ticket.kiosgamer.co.id"
-ACCESS_TO_JWT_URL = "https://kallu-access-to-jwt.vercel.app/token?access_token={access_token}"
-GUEST_TO_JWT_URL = "https://kallu-access-to-jwt.vercel.app/token?uid={uid}&password={password}"
+ACCESS_TO_JWT_URL = os.getenv("ACCESS_TO_JWT_URL", "").strip()
+UID_PASSWORD_TO_JWT_URL = os.getenv("UID_PASSWORD_TO_JWT_URL", "").strip()
 
 # Player Info Configuration
 MAIN_KEY = base64.b64decode('WWcmdGMlREV1aDYlWmNeOA==')
@@ -194,8 +194,18 @@ def convert_to_jwt(token, token_type):
             
         elif token_type == 'access_token':
             # Convert access token to JWT
-            url = ACCESS_TO_JWT_URL.format(access_token=token)
-            response = requests.get(url, verify=False, timeout=10)
+            if not ACCESS_TO_JWT_URL:
+                return None, (
+                    "Access token conversion is not configured on this server. "
+                    "Set ACCESS_TO_JWT_URL environment variable."
+                )
+
+            response = requests.get(
+                ACCESS_TO_JWT_URL,
+                params={"access_token": token},
+                verify=False,
+                timeout=10
+            )
             
             if response.status_code != 200:
                 return None, f"Failed to convert access token to JWT: HTTP {response.status_code}"
@@ -235,8 +245,14 @@ def convert_to_jwt(token, token_type):
             uid = uid.strip()
             password = password.strip()
             
+            if not UID_PASSWORD_TO_JWT_URL:
+                return None, (
+                    "UID:Password conversion is not configured on this server. "
+                    "Set UID_PASSWORD_TO_JWT_URL environment variable."
+                )
+
             response = requests.get(
-                "https://kallu-access-to-jwt.vercel.app/token",
+                UID_PASSWORD_TO_JWT_URL,
                 params={"uid": uid, "password": password},
                 verify=False,
                 timeout=10
@@ -869,6 +885,11 @@ def health_check():
         "service": "FreeFire Friend Manager",
         "timestamp": datetime.now().isoformat(),
         "version": "1.0.0",
+        "token_converters": {
+            "access_token": bool(ACCESS_TO_JWT_URL),
+            "uid_password": bool(UID_PASSWORD_TO_JWT_URL),
+            "eat_token": bool(ACCESS_TO_JWT_URL)
+        },
         "endpoints": {
             "POST /api/process-token": "Process tokens to JWT",
             "GET /api/get-player-info": "Get player information",
