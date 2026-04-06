@@ -188,6 +188,14 @@ def process_eat_token(eat_token):
 def convert_to_jwt(token, token_type):
     """Convert various token types to JWT"""
     try:
+        def normalize_token(token_value):
+            if not isinstance(token_value, str):
+                return token_value
+            cleaned = token_value.strip().strip('"').strip("'")
+            if cleaned.lower().startswith("bearer "):
+                cleaned = cleaned[7:].strip()
+            return cleaned
+
         def extract_jwt_from_response(response):
             """Extract JWT from common response formats."""
             # Try JSON payload first
@@ -197,12 +205,12 @@ def convert_to_jwt(token, token_type):
                     for key in ("token", "jwt_token", "jwt", "access_token"):
                         value = data.get(key)
                         if value and isinstance(value, str):
-                            return value, None
+                            return normalize_token(value), None
             except Exception:
                 pass
 
             # Fallback to plain text / HTML-ish responses
-            text = response.text.strip()
+            text = normalize_token(response.text.strip())
             if text and text.count(".") >= 2 and " " not in text:
                 # Looks like a raw JWT string
                 return text, None
@@ -223,21 +231,36 @@ def convert_to_jwt(token, token_type):
 
         if token_type == 'token':
             # Already JWT token
-            return token, None
+            return normalize_token(token), None
             
         elif token_type == 'access_token':
             # Convert access token to JWT
-            response = requests.get(
-                ACCESS_TO_JWT_URL,
-                params={"access_token": token},
-                verify=False,
-                timeout=10
-            )
-            
-            if response.status_code != 200:
-                return None, f"Failed to convert access token to JWT: HTTP {response.status_code}"
-            
-            return extract_jwt_from_response(response)
+            attempts = [
+                ("GET", {"params": {"access_token": token}}),
+                ("GET", {"params": {"token": token}}),
+                ("GET", {"params": {"accessToken": token}}),
+                ("POST", {"json": {"access_token": token}}),
+                ("POST", {"data": {"access_token": token}})
+            ]
+
+            last_status = None
+            last_error = None
+            for method, kwargs in attempts:
+                try:
+                    if method == "GET":
+                        response = requests.get(ACCESS_TO_JWT_URL, verify=False, timeout=10, **kwargs)
+                    else:
+                        response = requests.post(ACCESS_TO_JWT_URL, verify=False, timeout=10, **kwargs)
+                    last_status = response.status_code
+                    if response.status_code == 200:
+                        jwt_token, parse_error = extract_jwt_from_response(response)
+                        if jwt_token:
+                            return jwt_token, None
+                        last_error = parse_error
+                except Exception as e:
+                    last_error = str(e)
+
+            return None, last_error or f"Failed to convert access token to JWT: HTTP {last_status}"
             
         elif token_type == 'eat_token':
             # Process EAT token
@@ -257,17 +280,30 @@ def convert_to_jwt(token, token_type):
             uid = uid.strip()
             password = password.strip()
             
-            response = requests.get(
-                GUEST_TO_JWT_URL,
-                params={"uid": uid, "password": password},
-                verify=False,
-                timeout=10
-            )
-            
-            if response.status_code != 200:
-                return None, f"Failed to convert UID:Password to JWT: HTTP {response.status_code}"
-            
-            return extract_jwt_from_response(response)
+            attempts = [
+                ("GET", {"params": {"uid": uid, "password": password}}),
+                ("POST", {"json": {"uid": uid, "password": password}}),
+                ("POST", {"data": {"uid": uid, "password": password}})
+            ]
+
+            last_status = None
+            last_error = None
+            for method, kwargs in attempts:
+                try:
+                    if method == "GET":
+                        response = requests.get(GUEST_TO_JWT_URL, verify=False, timeout=10, **kwargs)
+                    else:
+                        response = requests.post(GUEST_TO_JWT_URL, verify=False, timeout=10, **kwargs)
+                    last_status = response.status_code
+                    if response.status_code == 200:
+                        jwt_token, parse_error = extract_jwt_from_response(response)
+                        if jwt_token:
+                            return jwt_token, None
+                        last_error = parse_error
+                except Exception as e:
+                    last_error = str(e)
+
+            return None, last_error or f"Failed to convert UID:Password to JWT: HTTP {last_status}"
             
         else:
             return None, f"Unknown token type: {token_type}"
