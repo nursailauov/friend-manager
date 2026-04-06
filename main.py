@@ -60,8 +60,8 @@ REGION_CONFIGS = {
 
 # External API URLs
 EAT_TOKEN_URL = "https://ticket.kiosgamer.co.id"
-ACCESS_TO_JWT_URL = "https://kallu-access-to-jwt.vercel.app/token?access_token={access_token}"
-GUEST_TO_JWT_URL = "https://kallu-access-to-jwt.vercel.app/token?uid={uid}&password={password}"
+ACCESS_TO_JWT_URL = "https://kallu-access-to-jwt.vercel.app/token"
+GUEST_TO_JWT_URL = "https://kallu-access-to-jwt.vercel.app/token"
 
 # Player Info Configuration
 MAIN_KEY = base64.b64decode('WWcmdGMlREV1aDYlWmNeOA==')
@@ -191,8 +191,12 @@ def convert_to_jwt(token, token_type):
             
         elif token_type == 'access_token':
             # Convert access token to JWT
-            url = ACCESS_TO_JWT_URL.format(access_token=token)
-            response = requests.get(url, verify=False, timeout=10)
+            response = requests.get(
+                ACCESS_TO_JWT_URL,
+                params={"access_token": token},
+                verify=False,
+                timeout=10
+            )
             
             if response.status_code != 200:
                 return None, f"Failed to convert access token to JWT: HTTP {response.status_code}"
@@ -232,8 +236,12 @@ def convert_to_jwt(token, token_type):
             uid = uid.strip()
             password = password.strip()
             
-            url = GUEST_TO_JWT_URL.format(uid=uid, password=password)
-            response = requests.get(url, verify=False, timeout=10)
+            response = requests.get(
+                GUEST_TO_JWT_URL,
+                params={"uid": uid, "password": password},
+                verify=False,
+                timeout=10
+            )
             
             if response.status_code != 200:
                 return None, f"Failed to convert UID:Password to JWT: HTTP {response.status_code}"

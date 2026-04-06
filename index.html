@@ -1890,10 +1890,13 @@
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({token: token, token_type: currentTokenType})
                 });
-                
-                if (!response.ok) throw new Error(`Server returned ${response.status}`);
-                const data = await response.json();
-                
+
+                const data = await response.json().catch(() => ({}));
+
+                if (!response.ok) {
+                    throw new Error(data.error || `Server returned ${response.status}`);
+                }
+
                 if (data.success) {
                     currentJWT = data.jwt_token;
                     currentUserInfo = data;
