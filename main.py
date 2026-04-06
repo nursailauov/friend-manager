@@ -63,8 +63,8 @@ REGION_CONFIGS = {
 
 # External API URLs
 EAT_TOKEN_URL = "https://ticket.kiosgamer.co.id"
-ACCESS_TO_JWT_URL = "https://kallu-access-to-jwt.vercel.app/token?access_token={access_token}"
-GUEST_TO_JWT_URL = "https://jwt-maker-six.vercel.app/token?uid={uid}&password={password}"
+ACCESS_TO_JWT_URL = "https://kallu-access-to-jwt.vercel.app/token"
+GUEST_TO_JWT_URL = "https://jwt-maker-six.vercel.app/token"
 
 # Player Info Configuration
 MAIN_KEY = base64.b64decode('WWcmdGMlREV1aDYlWmNeOA==')
@@ -188,34 +188,56 @@ def process_eat_token(eat_token):
 def convert_to_jwt(token, token_type):
     """Convert various token types to JWT"""
     try:
+        def extract_jwt_from_response(response):
+            """Extract JWT from common response formats."""
+            # Try JSON payload first
+            try:
+                data = response.json()
+                if isinstance(data, dict):
+                    for key in ("token", "jwt_token", "jwt", "access_token"):
+                        value = data.get(key)
+                        if value and isinstance(value, str):
+                            return value, None
+            except Exception:
+                pass
+
+            # Fallback to plain text / HTML-ish responses
+            text = response.text.strip()
+            if text and text.count(".") >= 2 and " " not in text:
+                # Looks like a raw JWT string
+                return text, None
+
+            import re
+            patterns = [
+                r'token["\']?\s*[:=]\s*["\']([^"\']+)["\']',
+                r'jwt_token["\']?\s*[:=]\s*["\']([^"\']+)["\']',
+                r'jwt["\']?\s*[:=]\s*["\']([^"\']+)["\']',
+                r'access_token["\']?\s*[:=]\s*["\']([^"\']+)["\']'
+            ]
+            for pattern in patterns:
+                match = re.search(pattern, text)
+                if match:
+                    return match.group(1), None
+
+            return None, "No JWT token in response"
+
         if token_type == 'token':
             # Already JWT token
             return token, None
             
         elif token_type == 'access_token':
             # Convert access token to JWT
-            url = ACCESS_TO_JWT_URL.format(access_token=token)
-            response = requests.get(url, verify=False, timeout=10)
+            response = requests.get(
+                ACCESS_TO_JWT_URL,
+                params={"access_token": token},
+                verify=False,
+                timeout=10
+            )
             
             if response.status_code != 200:
                 return None, f"Failed to convert access token to JWT: HTTP {response.status_code}"
             
-            try:
-                data = response.json()
-                jwt_token = data.get('token')
-                if jwt_token:
-                    return jwt_token, None
-                else:
-                    return None, "No JWT token in response"
-            except:
-                # Try to extract from text
-                text = response.text
-                if 'token' in text:
-                    import re
-                    match = re.search(r'token["\']?:\s*["\']([^"\']+)["\']', text)
-                    if match:
-                        return match.group(1), None
-                return None, "Invalid JSON response"
+            return extract_jwt_from_response(response)
             
         elif token_type == 'eat_token':
             # Process EAT token
@@ -235,21 +257,17 @@ def convert_to_jwt(token, token_type):
             uid = uid.strip()
             password = password.strip()
             
-            url = GUEST_TO_JWT_URL.format(uid=uid, password=password)
-            response = requests.get(url, verify=False, timeout=10)
+            response = requests.get(
+                GUEST_TO_JWT_URL,
+                params={"uid": uid, "password": password},
+                verify=False,
+                timeout=10
+            )
             
             if response.status_code != 200:
                 return None, f"Failed to convert UID:Password to JWT: HTTP {response.status_code}"
             
-            try:
-                data = response.json()
-                jwt_token = data.get('token')
-                if jwt_token:
-                    return jwt_token, None
-                else:
-                    return None, "No JWT token in response"
-            except:
-                return None, "Invalid JSON response"
+            return extract_jwt_from_response(response)
             
         else:
             return None, f"Unknown token type: {token_type}"
