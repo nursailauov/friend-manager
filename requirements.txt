@@ -1,8 +1,7 @@
 Flask
 requests
 pycryptodome
-protobuf
-google
+protobuf>=6.30.0
 Werkzeug
 httpx
 flask-cors
