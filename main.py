@@ -65,7 +65,7 @@ REGION_CONFIGS = {
 # External API URLs
 EAT_TOKEN_URL = "https://ticket.kiosgamer.co.id"
 ACCESS_TO_JWT_URL = "https://kallu-access-to-jwt.vercel.app/token?access_token={access_token}"
-GUEST_TO_JWT_URL = "https://kallu-access-to-jwt.vercel.app/token?uid={uid}&password={password}"
+GUEST_TO_JWT_URL = "https://jwt-maker-six.vercel.app/token?uid={uid}&password={password}"
 
 # Player Info Configuration
 MAIN_KEY = base64.b64decode('WWcmdGMlREV1aDYlWmNeOA==')
