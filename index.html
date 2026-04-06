@@ -1639,6 +1639,12 @@
             showMessage('tokenMessage', 'error', 'Please enter your authentication token');
             return;
         }
+
+        if (currentTokenType === 'uid_password' && !token.includes(':')) {
+            showMessage('tokenMessage', 'error',
+                'UID:Password format required. Example: 12345678:your_password');
+            return;
+        }
         
         const btn = document.getElementById('loginBtn');
         const loading = document.getElementById('tokenLoading');
@@ -1661,12 +1667,12 @@
                     token_type: currentTokenType
                 })
             });
-            
+            const data = await response.json().catch(() => ({}));
+
             if (!response.ok) {
-                throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+                const backendError = data.error ? `: ${data.error}` : '';
+                throw new Error(`Server returned ${response.status}${backendError}`);
             }
-            
-            const data = await response.json();
             
             if (data.success) {
                 currentJWT = data.jwt_token;

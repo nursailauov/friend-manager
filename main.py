@@ -235,11 +235,21 @@ def convert_to_jwt(token, token_type):
             uid = uid.strip()
             password = password.strip()
             
-            url = GUEST_TO_JWT_URL.format(uid=uid, password=password)
-            response = requests.get(url, verify=False, timeout=10)
+            response = requests.get(
+                "https://kallu-access-to-jwt.vercel.app/token",
+                params={"uid": uid, "password": password},
+                verify=False,
+                timeout=10
+            )
             
             if response.status_code != 200:
-                return None, f"Failed to convert UID:Password to JWT: HTTP {response.status_code}"
+                response_text = response.text.strip()
+                if len(response_text) > 180:
+                    response_text = response_text[:180] + "..."
+                return None, (
+                    f"Failed to convert UID:Password to JWT: HTTP {response.status_code}"
+                    + (f" | {response_text}" if response_text else "")
+                )
             
             try:
                 data = response.json()
