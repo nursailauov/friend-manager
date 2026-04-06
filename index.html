@@ -1537,6 +1537,7 @@
     let currentUserInfo = null;
     let currentFriends = [];
     let currentTokenType = 'token';
+    let tokenConverters = { access_token: true, uid_password: true, eat_token: true };
     
     // Define platform and region maps
     const PLATFORM_MAP = {"3": {"name": "Facebook", "icon": "fab fa-facebook", "color": "#1877F2"}, "4": {"name": "Guest", "icon": "fas fa-user", "color": "#6c757d"}, "5": {"name": "VK", "icon": "fab fa-vk", "color": "#4C75A3"}, "8": {"name": "Google", "icon": "fab fa-google", "color": "#DB4437"}, "10": {"name": "Apple", "icon": "fab fa-apple", "color": "#000000"}, "11": {"name": "Twitter/X", "icon": "fab fa-twitter", "color": "#1DA1F2"}};
@@ -1559,6 +1560,7 @@
         
         // Setup event listeners
         setupEventListeners();
+        loadTokenConverterCapabilities();
     });
     
     // ====== SETUP EVENT LISTENERS ======
@@ -1630,6 +1632,41 @@
             }
         });
     }
+
+    async function loadTokenConverterCapabilities() {
+        try {
+            const response = await fetch(`${window.location.origin}/health`);
+            const data = await response.json();
+            if (data && data.token_converters) {
+                tokenConverters = { ...tokenConverters, ...data.token_converters };
+            }
+        } catch (error) {
+            console.warn('Failed to load converter capabilities from /health:', error);
+        }
+
+        const availabilityByType = {
+            access_token: tokenConverters.access_token,
+            uid_password: tokenConverters.uid_password,
+            eat_token: tokenConverters.eat_token
+        };
+
+        document.querySelectorAll('.token-type-btn').forEach(btn => {
+            const tokenType = btn.getAttribute('data-type');
+            if (!(tokenType in availabilityByType) || availabilityByType[tokenType]) return;
+
+            btn.style.opacity = '0.45';
+            btn.style.pointerEvents = 'none';
+            btn.title = 'Temporarily unavailable on server';
+
+            if (btn.classList.contains('active')) {
+                btn.classList.remove('active');
+                currentTokenType = 'token';
+                const jwtBtn = document.querySelector('.token-type-btn[data-type=\"token\"]');
+                if (jwtBtn) jwtBtn.classList.add('active');
+                document.getElementById('userToken').placeholder = 'Paste your JWT token here...';
+            }
+        });
+    }
     
     // ====== AUTHENTICATE USER ======
     async function authenticateUser() {
@@ -1637,6 +1674,12 @@
         
         if (!token) {
             showMessage('tokenMessage', 'error', 'Please enter your authentication token');
+            return;
+        }
+
+        if (currentTokenType === 'uid_password' && !token.includes(':')) {
+            showMessage('tokenMessage', 'error',
+                'UID:Password format required. Example: 12345678:your_password');
             return;
         }
         
@@ -1661,12 +1704,12 @@
                     token_type: currentTokenType
                 })
             });
-            
+            const data = await response.json().catch(() => ({}));
+
             if (!response.ok) {
-                throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+                const backendError = data.error ? `: ${data.error}` : '';
+                throw new Error(`Server returned ${response.status}${backendError}`);
             }
-            
-            const data = await response.json();
             
             if (data.success) {
                 currentJWT = data.jwt_token;
@@ -1691,8 +1734,11 @@
             }
         } catch (error) {
             console.error('Authentication error:', error);
+            const isServerError = error.message && error.message.startsWith('Server returned');
             showMessage('tokenMessage', 'error', 
-                `Network error: ${error.message}. Please check server connection.`);
+                isServerError
+                    ? error.message
+                    : `Network error: ${error.message}. Please check server connection.`);
         } finally {
             btn.disabled = false;
             loading.style.display = 'none';
